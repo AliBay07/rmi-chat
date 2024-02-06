@@ -21,7 +21,9 @@ public class UserClient {
             }
 
             String host = args[0];
-            Registry registry = LocateRegistry.getRegistry(host);
+            int port = Integer.parseInt(args[1]);
+
+            Registry registry = LocateRegistry.getRegistry(host, port);
             ChatInterface h = (ChatInterface) registry.lookup("ChatService");
 
             Scanner scan = new Scanner(System.in);
