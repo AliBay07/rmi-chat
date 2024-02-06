@@ -7,7 +7,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
 
-public class UserClient implements Remote {
+public class UserClient {
 
     private User user;
 
