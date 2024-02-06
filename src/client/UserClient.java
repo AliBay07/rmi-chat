@@ -26,35 +26,40 @@ public class UserClient {
             ChatInterface h = (ChatInterface) registry.lookup("ChatService");
 
             Scanner scan = new Scanner(System.in);
-            String first_name = "";
-            String last_name = "";
+            String userName = "";
+            int response = -1;
+            User u = null;
 
-            System.out.println("TESTTT");
+            while (userName.isEmpty() || response == -1) {
+                System.out.println("Enter your user name: ");
+                userName = scan.nextLine();
 
-            while (first_name.isEmpty()) {
-                System.out.println("Enter your first name: ");
-                first_name = scan.nextLine();
+                if (!(userName.isEmpty())) {
+                    u = new User();
+                    u.setUserName(userName);
+
+                    response = h.enter(u);
+
+                    if (response == -1) {
+                        System.out.println("UserName already taken, choose another one!");
+                    }
+                }
             }
-
-            while (last_name.isEmpty()) {
-                System.out.println("Enter your first name: ");
-                last_name = scan.nextLine();
-            }
-
-            User u = new User();
-            u.setFirstName(first_name);
-            u.setLastName(last_name);
 
             String message = "";
-            while ((message = scan.nextLine()) == null) {
-                h.say(u, message);
+            while (!(message.equals(":qw!"))) {
+                System.out.print("Enter message (:qw! to leave): ");
+                message = scan.nextLine();
+                if (!(message.equals(":qw!"))) {
+                    h.say(u, message);
+                }
             }
+
+            h.exit(u);
 
         } catch (Exception e) {
             System.err.println("Error on server :" + e);
             e.printStackTrace();
         }
-
     }
-
 }

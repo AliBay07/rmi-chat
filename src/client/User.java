@@ -1,23 +1,16 @@
 package client;
 
-public class User {
+import java.io.Serializable;
 
-    private String firstName;
-    private String lastName;
+public class User implements Serializable {
 
-    public String getFirstName() {
-        return firstName;
+    private String userName;
+
+    public String getUserName() {
+        return userName;
     }
 
-    public void setFirstName(String first_name) {
-        this.firstName = first_name;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
