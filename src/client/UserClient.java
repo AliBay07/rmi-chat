@@ -21,14 +21,15 @@ public class UserClient {
             }
 
             String host = args[0];
-            int port = Integer.parseInt(args[1]);
 
-            Registry registry = LocateRegistry.getRegistry(host, port);
+            Registry registry = LocateRegistry.getRegistry(host);
             ChatInterface h = (ChatInterface) registry.lookup("ChatService");
 
             Scanner scan = new Scanner(System.in);
             String first_name = "";
             String last_name = "";
+
+            System.out.println("TESTTT");
 
             while (first_name.isEmpty()) {
                 System.out.println("Enter your first name: ");
