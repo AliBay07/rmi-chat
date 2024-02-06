@@ -13,7 +13,7 @@ public class ChatServer {
             Chat c = new Chat();
             ChatInterface chat_ref = (ChatInterface) UnicastRemoteObject.exportObject(c, 0);
 
-            Registry registry= LocateRegistry.getRegistry();
+            Registry registry= LocateRegistry.getRegistry("127.0.0.1",6090);
             registry.rebind("ChatService", chat_ref);
 
             System.out.println ("Server ready");
