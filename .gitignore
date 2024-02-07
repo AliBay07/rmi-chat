@@ -1,5 +1,7 @@
 out/
 
+chat_history.txt
+
 # Compiled class file
 *.class
 

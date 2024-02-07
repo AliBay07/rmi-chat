@@ -14,7 +14,7 @@ public class ChatServer {
             ChatInterface chat_ref = (ChatInterface) UnicastRemoteObject.exportObject(c, 0);
 
             Registry registry = null;
-            if (args.length>0)
+            if (args.length > 0)
                 registry= LocateRegistry.getRegistry(Integer.parseInt(args[0]));
             else
                 registry = LocateRegistry.getRegistry();

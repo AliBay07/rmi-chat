@@ -1,35 +1,113 @@
 package server;
 
 import client.User;
-import client.UserClient;
 
+import javax.swing.*;
+import java.io.*;
 import java.rmi.RemoteException;
-import java.sql.Array;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 public class Chat implements ChatInterface {
 
-    ArrayList<String> usernames = new ArrayList<>();
+    private final ArrayList<User> users;
+    private final ArrayList<ChatObserver> observers;
+    private final ArrayList<String> messages;
+    private final String chatHistoryFile = "chat_history.txt";
+
+    public Chat() throws RemoteException {
+        super();
+        users = new ArrayList<>();
+        observers = new ArrayList<>();
+        messages = new ArrayList<>();
+        loadChatHistory();
+    }
+
+    private void loadChatHistory() {
+        try {
+            File file = new File(chatHistoryFile);
+
+            if (!file.exists()) {
+                if (file.createNewFile()) {
+                    System.out.println("Chat history file created: " + file.getAbsolutePath());
+                } else {
+                    System.err.println("Failed to create chat history file.");
+                }
+            }
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    messages.add(line);
+                }
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error reading or creating chat history: " + e);
+            e.printStackTrace();
+        }
+    }
+
+    private void saveChatHistory(String message) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(chatHistoryFile, true))) {
+                writer.write(message);
+                writer.newLine();
+        } catch (IOException e) {
+            System.err.println("Error writing chat history: " + e);
+            e.printStackTrace();
+        }
+    }
 
     @Override
-    public int enter(User u) throws RemoteException {
-        if (usernames.contains(u.getUserName())) {
-            return -1;
+    public int enter(User u, ChatObserver observer) throws RemoteException {
+        for (User user : users) {
+            if (user.getUserName().equals(u.getUserName())) {
+                return -1;
+            }
         }
-        usernames.add(u.getUserName());
-        System.out.println(u.getUserName() + " entered the chat!");
+        users.add(u);
+        observers.add(observer);
+        System.out.println(observer + " entered the chat!");
+        System.out.println(observers);
+        notifyObserversEnter(u);
+        for (String message : messages) {
+            observer.onMessage(u, message);
+        }
         return 0;
     }
 
     @Override
-    public int exit(User u) throws RemoteException {
-        usernames.remove(u.getUserName());
-        System.out.println(u.getUserName() + " left the chat!");
+    public int exit(User u, ChatObserver observer) throws RemoteException {
+        users.remove(u);
+        observers.remove(observer);
+        System.out.println(observer + " left the chat!");
+        notifyObserversExit(u);
         return 0;
     }
 
     @Override
     public void say(User u, String message) throws RemoteException {
-        System.out.println(u.getUserName() + ": " + message);
+        String formattedMessage = u.getUserName() + ": " + message;
+        messages.add(formattedMessage);
+        notifyObserversMessage(u, formattedMessage);
+        saveChatHistory(formattedMessage);
+    }
+
+    private void notifyObserversEnter(User u) throws RemoteException {
+        for (ChatObserver observer : observers) {
+            observer.onEnter(u);
+        }
+    }
+
+    private void notifyObserversExit(User u) throws RemoteException {
+        for (ChatObserver observer : observers) {
+            observer.onExit(u);
+        }
+    }
+
+    private void notifyObserversMessage(User u, String message) throws RemoteException {
+        for (ChatObserver observer : observers) {
+            observer.onMessage(u, message);
+        }
     }
 }
