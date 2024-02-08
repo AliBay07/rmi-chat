@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
 public class UserClient extends JFrame implements ChatObserver, Serializable {
 
@@ -82,42 +83,39 @@ public class UserClient extends JFrame implements ChatObserver, Serializable {
     private void startUserClient() {
         try {
 
+
             Registry registry = LocateRegistry.getRegistry(host, port);
             h = (ChatInterface) registry.lookup("ChatService");
+
+            ChatObserver stub = (ChatObserver) UnicastRemoteObject.exportObject(this, 0);
+
             int response = -1;
             String userName;
 
             while (response == -1) {
                 userName = JOptionPane.showInputDialog("Enter your user name:");
-                if (!(userName.isEmpty())) {
+                if (userName != null && !userName.isEmpty()) {
                     u = new User();
                     u.setUserName(userName);
 
-                    response = h.enter(u, this);
+                    response = h.enter(u, stub);
 
                     if (response == -1) {
                         JOptionPane.showMessageDialog(null, "UserName already taken, choose another one!");
+                    } else {
+                        SwingUtilities.invokeLater(() -> setVisible(true));
                     }
-
-                    exitButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            exitChat();
-                        }
-                    });
-
-                    SwingUtilities.invokeLater(() -> setVisible(true));
-
                 } else {
                     JOptionPane.showMessageDialog(null, "Username cannot be empty. Exiting.");
+                    System.exit(0);
                 }
             }
-
         } catch (Exception e) {
             System.err.println("Error starting user client: " + e);
             e.printStackTrace();
         }
     }
+
 
     private void sendMessage() {
         String message = inputField.getText().trim();
