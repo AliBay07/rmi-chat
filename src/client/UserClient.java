@@ -122,7 +122,7 @@ public class UserClient extends JFrame implements ChatObserver, Serializable {
         if (!message.isEmpty()) {
             inputField.setText("");
             try {
-                chatArea.append(u.getUserName() + ": " + message + "\n");
+                //chatArea.append(u.getUserName() + ": " + message + "\n");
                 h.say(u, message);
             } catch (RemoteException e) {
                 System.err.println("Error sending message: " + e);
@@ -153,7 +153,7 @@ public class UserClient extends JFrame implements ChatObserver, Serializable {
 
     @Override
     public void onMessage(User u, String message) throws RemoteException {
-        SwingUtilities.invokeLater(() -> this.getChatArea().append(u.getUserName() + ": " + message + "\n"));
+        SwingUtilities.invokeLater(() -> this.getChatArea().append( message + "\n"));
     }
 
     @Override
