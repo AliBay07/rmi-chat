@@ -67,12 +67,10 @@ public class Chat implements ChatInterface {
         }
         users.add(u);
         observers.add(observer);
-        System.out.println(observer + " entered the chat!");
-        System.out.println(observers);
-        notifyObserversEnter(u);
         for (String message : messages) {
             observer.onMessage(u, message);
         }
+        notifyObserversEnter(u);
         return 0;
     }
 
@@ -80,7 +78,6 @@ public class Chat implements ChatInterface {
     public int exit(User u, ChatObserver observer) throws RemoteException {
         users.remove(u);
         observers.remove(observer);
-        System.out.println(observer + " left the chat!");
         notifyObserversExit(u);
         return 0;
     }

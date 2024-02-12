@@ -83,7 +83,6 @@ public class UserClient extends JFrame implements ChatObserver, Serializable {
     private void startUserClient() {
         try {
 
-
             Registry registry = LocateRegistry.getRegistry(host, port);
             h = (ChatInterface) registry.lookup("ChatService");
 
@@ -122,7 +121,6 @@ public class UserClient extends JFrame implements ChatObserver, Serializable {
         if (!message.isEmpty()) {
             inputField.setText("");
             try {
-                //chatArea.append(u.getUserName() + ": " + message + "\n");
                 h.say(u, message);
             } catch (RemoteException e) {
                 System.err.println("Error sending message: " + e);
