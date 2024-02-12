@@ -2,6 +2,7 @@ package client;
 
 import server.ChatObserver;
 import server.ChatInterface;
+import sun.misc.Signal;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,6 +53,7 @@ public class UserClient extends JFrame implements ChatObserver, Serializable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 exitChat();
+                System.exit(0);
             }
         });
 
@@ -102,11 +104,19 @@ public class UserClient extends JFrame implements ChatObserver, Serializable {
                     if (response == -1) {
                         JOptionPane.showMessageDialog(null, "UserName already taken, choose another one!");
                     } else {
+                        Signal.handle(new Signal("INT"),
+                                signal -> {
+                                    try {
+                                        h.exit(u, stub);
+                                        System.exit(0);
+                                    } catch (RemoteException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                });
                         SwingUtilities.invokeLater(() -> setVisible(true));
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Username cannot be empty. Exiting.");
-                    System.exit(0);
                 }
             }
         } catch (Exception e) {
@@ -114,7 +124,6 @@ public class UserClient extends JFrame implements ChatObserver, Serializable {
             e.printStackTrace();
         }
     }
-
 
     private void sendMessage() {
         String message = inputField.getText().trim();

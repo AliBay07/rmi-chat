@@ -4,9 +4,7 @@ CURRENT_DIR=$(pwd)
 
 export CLASSPATH=$CURRENT_DIR/classes
 
-gnome-terminal -- bash -c "javac -d classes src/server/*.java src/client/*.java;"
-
-gnome-terminal -- bash -c "export CLASSPATH=$CLASSPATH; echo 'Démarrage du rmiregistry sur le port 6090'; rmiregistry 6090; exec bash"
+gnome-terminal -- bash -c "javac -d classes src/server/*.java src/client/*.java; export CLASSPATH=$CLASSPATH; echo 'Démarrage du rmiregistry sur le port 6090'; rmiregistry 6090; exec bash"
 
 sleep 2
 

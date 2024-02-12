@@ -2,24 +2,25 @@ package server;
 
 import client.User;
 
-import javax.swing.*;
 import java.io.*;
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Chat implements ChatInterface {
 
-    private final ArrayList<User> users;
-    private final ArrayList<ChatObserver> observers;
-    private final ArrayList<String> messages;
+    private final List<User> users;
+    private final List<ChatObserver> observers;
+    private final List<String> messages;
     private final String chatHistoryFile = "chat_history.txt";
 
     public Chat() throws RemoteException {
         super();
-        users = new ArrayList<>();
-        observers = new ArrayList<>();
-        messages = new ArrayList<>();
+        users = Collections.synchronizedList(new ArrayList<>());
+        observers = Collections.synchronizedList(new ArrayList<>());
+        messages = Collections.synchronizedList(new ArrayList<>());
         loadChatHistory();
     }
 
@@ -90,21 +91,37 @@ public class Chat implements ChatInterface {
         saveChatHistory(formattedMessage);
     }
 
+    private void handleClientConnectionError(ChatObserver observer) {
+        observers.remove(observer);
+    }
+
     private void notifyObserversEnter(User u) throws RemoteException {
         for (ChatObserver observer : observers) {
-            observer.onEnter(u);
+            try {
+                observer.onEnter(u);
+            } catch (Exception e) {
+                handleClientConnectionError(observer);
+            }
         }
     }
 
     private void notifyObserversExit(User u) throws RemoteException {
         for (ChatObserver observer : observers) {
-            observer.onExit(u);
+            try {
+                observer.onExit(u);
+            } catch (Exception e) {
+                handleClientConnectionError(observer);
+            }
         }
     }
 
     private void notifyObserversMessage(User u, String message) throws RemoteException {
         for (ChatObserver observer : observers) {
-            observer.onMessage(u, message);
+            try {
+                observer.onMessage(u, message);
+            } catch (Exception e) {
+                handleClientConnectionError(observer);
+            }
         }
     }
 }
