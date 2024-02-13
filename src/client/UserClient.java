@@ -116,7 +116,7 @@ public class UserClient extends JFrame implements ChatObserver, Serializable {
                         SwingUtilities.invokeLater(() -> setVisible(true));
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Username cannot be empty. Exiting.");
+                    System.exit(0);
                 }
             }
         } catch (Exception e) {
