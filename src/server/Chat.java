@@ -49,7 +49,7 @@ public class Chat implements ChatInterface {
         }
     }
 
-    private void saveChatHistory(String message) {
+    private synchronized void saveChatHistory(String message) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(chatHistoryFile, true))) {
                 writer.write(message);
                 writer.newLine();

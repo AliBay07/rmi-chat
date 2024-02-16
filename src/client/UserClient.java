@@ -132,8 +132,7 @@ public class UserClient extends JFrame implements ChatObserver, Serializable {
             try {
                 h.say(u, message);
             } catch (RemoteException e) {
-                System.err.println("Error sending message: " + e);
-                e.printStackTrace();
+                SwingUtilities.invokeLater(() -> this.getChatArea().append("Can't connect to Server!\n"));
             }
         }
     }
