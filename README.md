@@ -1,4 +1,4 @@
-# Chat Application using Java RMI
+# Application de Chat en Java RMI
 
 ## Compilation de l'Application
 
